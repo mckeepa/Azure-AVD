@@ -61,6 +61,54 @@ The control plane, network, Bastion, NAT gateway, and user permissions are deplo
 The Portal-created host `AVD-Bastion-0` is registered on the private compute subnet and is currently
 `Available` with `AllowNewSession=True`.
 
+## AVD session-host configuration
+
+The following settings document the session host created through the Azure Portal
+**Add virtual machines to a host pool** workflow. They describe `AVD-Bastion-0`, not
+the separate script-created utility VM `vm-avd-host01`.
+
+| Setting | Value |
+|---|---|
+| Resource group | `rg-avd-bastion` |
+| Host-pool name | `hp-avd-main` |
+| Session-host name prefix | `AVD-Bastion` |
+| Session-host VM name | `AVD-Bastion-0` |
+| Virtual machine type | Azure virtual machine |
+| Region | Australia East (`australiaeast`) |
+| Availability option | Availability zones |
+| Availability zone | Zone 1 |
+| Security type | Trusted launch virtual machines |
+| Secure Boot | Enabled |
+| vTPM | Enabled |
+| Integrity monitoring | Disabled |
+| Image publisher | `MicrosoftWindowsDesktop` |
+| Image offer | `windows-11` |
+| Image SKU | `win11-25h2-avd` |
+| Image version | `latest` at deployment; deployed exact version `26200.9457.260913` |
+| Operating system | Windows 11 Enterprise multi-session, Version 25H2 |
+| VM size | `Standard_D2as_v5` |
+| VM resources | 2 vCPUs, 8 GiB memory |
+| Number of VMs | 1 |
+| OS disk type | Standard SSD (`StandardSSD_LRS`) |
+| OS disk size | 128 GiB |
+| OS disk caching | ReadWrite |
+| Boot diagnostics | Enabled with managed storage account |
+| Virtual network | `vnet-avd-core` |
+| Subnet | `snet-avd-compute` (`10.0.0.0/24`) |
+| Network security group | Basic |
+| Public inbound ports | None |
+| Directory join | Microsoft Entra ID |
+| Intune enrollment | No |
+| AVD registration | Registered in `hp-avd-main` |
+| Current state | `Available`; `AllowNewSession=True` |
+
+The session-host local administrator username used in the Portal workflow is
+`local-admin`. The administrator password is deliberately not documented or stored
+in the repository. The separate script-created utility VM uses the username
+`local-admin-2026` from [avd_config.env](./avd_config.env).
+The exact generated NIC, disk, and managed-identity resource IDs are also omitted because
+Azure generates them and they are not needed to repeat the Portal setup.
+
 ## Azure resources and how they fit together
 
 The deployment has two different kinds of resources:
@@ -291,15 +339,25 @@ In Azure Portal:
 
 1. Open **Host pools** and select `hp-avd-main`.
 2. Open **Session hosts** and select **Add**.
-3. Choose **Azure virtual machine** in **Australia East**.
-4. Select a current **Windows 11 Enterprise multi-session** image.
-5. Select **Microsoft Entra ID** as the join type.
-6. Select VNet `vnet-avd-core`.
-7. Select subnet `snet-avd-compute`.
-8. Set public inbound ports to **None** or **No**.
-9. Do not select `AzureBastionSubnet`.
-10. Complete the administrator settings and create the host.
-11. Wait until the host reports **Available** and accepts new sessions.
+3. Set the name prefix to `AVD-Bastion`.
+4. Choose **Azure virtual machine** in **Australia East**.
+5. Select **Availability zones** and **Zone 1**.
+6. Select **Trusted launch virtual machines**.
+7. Confirm **Secure Boot** and **vTPM** are enabled; leave **Integrity monitoring** disabled.
+8. Select **Windows 11 Enterprise multi-session, Version 25H2** (`win11-25h2-avd`).
+9. Select size **Standard D2as v5** (2 vCPUs, 8 GiB memory).
+10. Set **Number of VMs** to `1`.
+11. Select **Standard SSD** and the default OS disk size of **128 GiB**.
+12. Enable boot diagnostics with a managed storage account.
+13. Select VNet `vnet-avd-core`.
+14. Select subnet `snet-avd-compute`.
+15. Use the **Basic** network security group option.
+16. Set public inbound ports to **No**.
+17. Select **Microsoft Entra ID** for the join type.
+18. Set **Enroll VM with Intune** to **No**.
+19. Do not select `AzureBastionSubnet`.
+20. Complete the administrator settings and create the host.
+21. Wait until the host reports **Available** and accepts new sessions.
 
 Resume from Linux:
 
