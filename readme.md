@@ -40,7 +40,7 @@ environment:
 bash 08_cleanup_azure.sh ./avd_config.env --delete
 ```
 
-## Current environment
+## Environment
 
 Last checked: 20 September 2026.
 
