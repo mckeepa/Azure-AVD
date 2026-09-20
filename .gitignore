@@ -1,0 +1,7 @@
+# Local Azure environment details and secrets
+private.env
+*.env.local
+
+# Azure CLI and local tooling state
+.azure/
+
